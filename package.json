@@ -1,0 +1,60 @@
+{
+  "name": "crosmo-shooter",
+  "version": "1.0.0",
+  "description": "Server for Crosmo Shooter",
+  "main": ".eslintrc.js",
+  "scripts": {
+    "start": " ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
+    "heroku-postbuild": "npm i && ts-node --project tsconfig.server.json --transpile-only index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alan-cousin/crosmo-shooter-server"
+  },
+  "keywords": [],
+  "author": "Meta Pirate",
+  "license": "MIC",
+  "bugs": {
+    "url": "https://github.com/alan-cousin/crosmo-shooter-server/issues"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.1",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "copyfiles": "^2.4.1",
+    "dotenv": "^16.0.0",
+    "eslint": "^7.11.0",
+    "minimist": ">=1.2.2",
+    "rimraf": "^2.7.1",
+    "ts-node": "^8.1.0",
+    "ts-node-dev": "^1.0.0-pre.63",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@colyseus/arena": "^0.14.9",
+    "@colyseus/command": "^0.1.7",
+    "@colyseus/monitor": "^0.14.0",
+    "@colyseus/uwebsockets-transport": "^0.14.29",
+    "@truffle/hdwallet-provider": "^2.0.8",
+    "bcrypt": "^5.0.1",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.20.0",
+    "colyseus": "^0.14.17",
+    "colyseus.js": "^0.14.12",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "log-to-file": "^3.0.3",
+    "matter-js": "^0.18.0",
+    "moment": "^2.29.3",
+    "mongoose": "^6.2.10",
+    "package-lock-only": "^0.0.4",
+    "path": "^0.12.7",
+    "regenerator-runtime": "^0.13.7",
+    "tslib": "^2.3.0",
+    "web3": "^1.7.3"
+  }
+}
