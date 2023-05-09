@@ -1,3 +1,6 @@
+import { RoomMode } from './../interfaces/RoomMode';
+import { MapMode } from './../interfaces/MapMode';
+
 export enum RoomType {
   LOBBY = 'lobby',
   PUBLIC = 'crosmo',
@@ -5,8 +8,10 @@ export enum RoomType {
 }
 
 export interface IRoomData {
-  name: string
-  // description: string
-  // password: string | null
-  autoDispose: boolean
+  name: string,
+  password: string | null,
+  autoDispose: boolean,
+  roomMode: RoomMode,
+  mapMode: MapMode,
+  cost: number
 }

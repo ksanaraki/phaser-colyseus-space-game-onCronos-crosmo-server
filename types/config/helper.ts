@@ -24,7 +24,7 @@ export function sanitizeId(id) {
 export const HeaderToken = () => {
   return {
     headers: {
-      token: localStorage.getItem('jwt') ? JSON.parse(localStorage.getItem('jwt')).token : false,
+      token: localStorage.getItem('jwt') ? JSON.parse(localStorage.getItem('jwt') || ``).token : false,
     },
   };
 };

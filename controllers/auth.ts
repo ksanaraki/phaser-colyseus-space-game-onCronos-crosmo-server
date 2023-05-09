@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import dotenv from 'dotenv'
+const log = require('log-to-file');
 
 const userService = require('../services/user')
 dotenv.config()
@@ -15,13 +16,22 @@ const login = async (req, res, next) => {
     return res.json({
       error: "Fields must not be empty."
     })
-
+  const date = new Date();
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth();
+  const d = date.getUTCDate();
+  const t = date.getUTCHours();
   let usr = await userService.findUserByAccount(account)
 
   if (!usr) {
-    const usrRes = await userService.addUser(account)
-    usr = await userService.findUserByAccount(account)
+
+    const usrRes = await userService.addUser(account);
+
+    log(`${account} is signed up.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
+
+    usr = await userService.findUserByAccount(account);
   }
+  log(`${account} logged in.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
 
   const token = jwt.sign(
     { _id: usr._id },

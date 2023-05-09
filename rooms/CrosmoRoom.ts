@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import { Room, Client, ServerError, Delayed } from 'colyseus'
 import { Dispatcher } from '@colyseus/command'
 import Web3 from 'web3'
@@ -28,32 +29,40 @@ import {
 import { shooterContractAddr, shooterAbi } from './../controllers/web3helper'
 import { getScore, setScore } from './../rooms/state';
 
+import { RoomMode } from '../interfaces/RoomMode';
+import { MapMode } from '../interfaces/MapMode';
+const log = require('log-to-file');
+
 const scoreService = require("./../services/score");
 
 export class CrosmoRoom extends Room<CrosmoState> {
-  maxClients = 2;
   public delayedInterval!: Delayed;
   private dispatcher = new Dispatcher(this)
-  // private name: string
-  // private description: string
-  // private password: string | null = null
+  private name: string
+  private password: string | null = null
+
+  private roomMode: RoomMode = RoomMode.DvD;
+  private mapMode: MapMode = MapMode.Blank;
+  private cost: number = 0;
+
   private isSplit = false;
   private gameStart = false;
 
 
   async onCreate(options: IRoomData) {
-    // const { name, description, password, autoDispose } = options
-    // this.name = name
+    const { name, password, autoDispose, roomMode, mapMode, cost } = options
+    this.name = name
     // this.description = description
-    // this.autoDispose = autoDispose
+    this.autoDispose = autoDispose
 
-    // let hasPassword = false
-    // if (password) {
-    //   const salt = await bcrypt.genSalt(10)
-    //   this.password = await bcrypt.hash(password, salt)
-    //   hasPassword = true
-    // }
-    // this.setMetadata({ name, description, hasPassword })
+    let hasPassword = false
+    if (password) {
+      const salt = await bcrypt.genSalt(10)
+      this.password = await bcrypt.hash(password, salt)
+      hasPassword = true
+    }
+    this.maxClients = getMaxPlayerNumber(roomMode);
+    this.setMetadata({ name, hasPassword, roomMode, mapMode, cost })
     this.setState(new CrosmoState())
     this.setPatchRate(20)//standard 50
 
@@ -79,6 +88,8 @@ export class CrosmoRoom extends Room<CrosmoState> {
         shipName: string,
         tokenId: number,
         tier: number
+        paid: boolean,
+        team: number | null
       }) => {
         setScore(message.score);
         let dt = this.state.client2ServerDelay(message.clientTime, client.sessionId)
@@ -103,7 +114,9 @@ export class CrosmoRoom extends Room<CrosmoState> {
           account: message.account,
           shipName: message.shipName,
           tokenId: message.tokenId,
-          tier: message.tier
+          tier: message.tier,
+          paid: message.paid,
+          team: message.team
         })
       }
     )
@@ -385,36 +398,56 @@ export class CrosmoRoom extends Room<CrosmoState> {
   onLeave(client: Client, consented: boolean) {
     if (this.state.players.has(client.sessionId)) {
       const user = this.state.getPlayer(client.sessionId);
-
+      const date = new Date();
+      const y = date.getUTCFullYear();
+      const m = date.getUTCMonth();
+      const d = date.getUTCDate();
+      const t = date.getUTCHours();
+      log(`${user?.account || 'unknown'} is leaved from the game.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
+      console.log(`user`, user?.team);
       const myPrivateKeyHex =  "347888769cf714d73fa41bbc30746298c7162124a06a518a0b3bad16edf266e4";
       const init = async () => {
-        const httpProvider = new Web3.providers.HttpProvider(`https://gateway.nebkas.ro`);
-        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send
-        const localKeyProvider = new HDWalletProvider({
-          privateKeys: [myPrivateKeyHex],
-          providerOrUrl: httpProvider,
-        });
-        const web3 = new Web3(localKeyProvider);
-        const myAccount = web3.eth.accounts.privateKeyToAccount(myPrivateKeyHex);
-        const myContract = new web3.eth.Contract(shooterAbi as any, shooterContractAddr);
-        try {
-          const receipt = await myContract.methods.playSession(user?.score, user?.account, user?.tokenId).send({ from: myAccount.address });
-        } catch (e) {
-          console.log('error occured in sending reward token. try it again...')
-          setTimeout(() => init(), 1000)
+        try{
+          const httpProvider = new Web3.providers.HttpProvider(`https://gateway.nebkas.ro`);
+          Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+          const localKeyProvider = new HDWalletProvider({
+            privateKeys: [myPrivateKeyHex],
+            providerOrUrl: httpProvider,
+          });
+          const web3 = new Web3(localKeyProvider);
+          const myAccount = web3.eth.accounts.privateKeyToAccount(myPrivateKeyHex);
+          const myContract = new web3.eth.Contract(shooterAbi as any, shooterContractAddr);
+          try {
+            const receipt = await myContract.methods.playSession(user?.score, user?.account, user?.tokenId).send({ from: myAccount.address });
+          } catch (e) {
+            console.log('error occured in sending reward token. try it again...', e)
+            setTimeout(() => init(), 1000)
+          }
         }
+        catch(e) {
+          console.log('error occured in communication with smart contract...')
+        }
+
       }
-      if (user?.score > 0) {
-        init()
+      if (user?.score > 0 && user?.paid) {
+        // init()
       }
 
       (async () => {
+        const date = new Date();
+        const y = date.getUTCFullYear();
+        const m = date.getUTCMonth();
+        const d = date.getUTCDate();
+        const t = date.getUTCHours();
         try{
           if(user){
-            const usrRes = await scoreService.saveScoreService(user?.account, user?.tokenId, user?.shipName, user?.tier, user?.score)
+            const usrRes = await scoreService.saveScoreService(user?.account || `unknow`, user?.tokenId || `unknow`, user?.shipName || `unknow`, user?.tier || 0, user?.score || 0);
+
+            log(`${user?.account || 'unknow'} get rewards for ${user?.score || 0}.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
           }
         }
         catch(e){
+          log(`${user?.account || 'unknow'} didn't get rewards for ${user?.score || 0}. An Error was occupsed.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
           console.log(`Score Record failed! `, e);
         }
       })()
@@ -432,7 +465,27 @@ export class CrosmoRoom extends Room<CrosmoState> {
     this.clock.clear();
   }
 }
-function async(arg0: () => void) {
-  throw new Error('Function not implemented.')
+
+const getMaxPlayerNumber = (mode: RoomMode): number => {
+  let res = 12;
+  switch (mode) {
+    case RoomMode.Free:
+      res = 12;
+      break;
+    case RoomMode.OvO:
+      res = 2;
+      break;
+    case RoomMode.DvD:
+      res = 4;
+      break;
+    case RoomMode.TvT:
+      res = 6;
+      break;
+  
+    default:
+      break;
+  }
+
+  return res;
 }
 

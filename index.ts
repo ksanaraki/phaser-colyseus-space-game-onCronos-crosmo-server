@@ -13,6 +13,9 @@ import { RoomType } from './types/Rooms'
 
 import { CrosmoRoom } from './rooms/CrosmoRoom'
 
+import { MapMode } from './interfaces/MapMode';
+import { RoomMode } from './interfaces/RoomMode';
+
 const routes = require('./index.route');
 
 dotenv.config()
@@ -48,10 +51,13 @@ const gameServer = new Server({
 gameServer.define(RoomType.LOBBY, LobbyRoom)
 gameServer.define(RoomType.PUBLIC, CrosmoRoom, {
   name: 'Public Lobby',
-  // description: 'For making friends and familiarizing yourself with the controls',
-  // password: null,
+  roomMode: RoomMode.Free,
+  mapMode: MapMode.Blank,
+  password: null,
+  cost: 0,
   autoDispose: false,
-})
+});
+gameServer.define(RoomType.CUSTOM, CrosmoRoom).enableRealtimeListing()
 // gameServer.define(RoomType.CUSTOM, CrosmoRoom).enableRealtimeListing()
 
 /**

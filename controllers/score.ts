@@ -69,8 +69,9 @@ const saveScoreLog = async (req, res, next) => {
       const y = date.getUTCFullYear();
       const m = date.getUTCMonth();
       const d = date.getUTCDate();
+      const t = date.getUTCHours();
 
-      log(`Address:${account}, TokenID:${tokenId}, ShipName:${shipName}, Tier:${tier}, Score:${score}`, `./logs/${y}-${m + 1}-${d}.log`);
+      log(`Address:${account}, TokenID:${tokenId}, ShipName:${shipName}, Tier:${tier}, Score:${score}`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
     }
     catch(e){
       console.log(`Log failed`, e);

@@ -6,6 +6,8 @@ export interface IPlayer extends Schema {
   tier: number,
   tokenId: number,
   shipName: string,
+  paid: boolean,
+  team: number | null,
   x: number,
   y: number,
   rotation: number,
