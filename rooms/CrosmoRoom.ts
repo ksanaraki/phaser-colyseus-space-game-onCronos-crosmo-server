@@ -89,7 +89,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
         tokenId: number,
         tier: number
         paid: boolean,
-        team: number | null
+        team: number
       }) => {
         setScore(message.score);
         let dt = this.state.client2ServerDelay(message.clientTime, client.sessionId)

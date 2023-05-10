@@ -29,7 +29,6 @@ type Payload = {
 export default class UpdatePlayer extends Command<ICrosmoState, Payload> {
   execute(data: Payload) {
     const { client, x, y, rotation,speed_x,speed_y,angularVel, isForwarding, hasShield, isFire, score, isExplode,lives,curServerTime, account, shipName, tier, tokenId, paid, team } = data
-      console.log(`team`, team);
     const player = this.room.state.players.get(client.sessionId)
 
     if (!player) return
