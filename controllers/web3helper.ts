@@ -1,4 +1,4 @@
-export const shooterContractAddr = "0xA554482831bC8D5ae809B637f6932D4E608BE5E7"
+export const shooterContractAddr = process.env.SHOOTER_CONTRACT;
 
 export const shooterAbi = [
   {

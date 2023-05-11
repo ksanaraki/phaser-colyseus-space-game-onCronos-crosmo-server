@@ -1,38 +1,14 @@
+# Crosmo Shooter ![License](https://img.shields.io/badge/license-MIT-blue) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)
 
-## Controls
+## Built with
 
-- `UP arrow key` for thrust.
-- `LEFT and RIGHT arrow keys` to turn.
-- `SPACE key` to fire.
+- [Phaser3](https://github.com/photonstorm/phaser) - Game engine
+- [Colyseus](https://github.com/colyseus/colyseus) - WebSocket-based server framework
+- [React/Redux](https://github.com/facebook/react) - Front-end framework
+- [TypeScript](https://github.com/microsoft/TypeScript) and [ES6](https://github.com/eslint/eslint) - for both client and server sides
 
 ## Prerequisites
 
 You'll need [Node.js](https://nodejs.org/en/), [npm](https://www.npmjs.com/) installed.
 
 ## Getting Started
-
-Clone this repository to your local machine:
-
-```bash
-git clone https://github.com/metapirate0311/crosmo-shooter.git
-```
-
-This will create a folder named `CrosmoShooter`. You can specify a different folder name like this:
-
-```bash
-git clone https://github.com/metapirate0311/crosmo-shooter.git my-folder-name
-```
-
-To start a server, go into the project folder and install dependencies/run start command:
-
-```bash
-cd CrosmoShooter or 'my-folder-name'
-npm install && npm run start
-```
-
-To start a client, go into the client folder and install dependencies/run start command:
-
-```bash
-cd CrosmoShooter/client or 'my-folder-name/client'
-npm install && npm run start
-```

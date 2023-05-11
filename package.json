@@ -4,7 +4,7 @@
   "description": "Server for Crosmo Shooter",
   "main": ".eslintrc.js",
   "scripts": {
-    "start": " ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
+    "start": "concurrently \"ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts\"",
     "heroku-postbuild": "npm i && ts-node --project tsconfig.server.json --transpile-only index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -44,6 +44,7 @@
     "body-parser": "^1.20.0",
     "colyseus": "^0.14.17",
     "colyseus.js": "^0.14.12",
+    "concurrently": "^8.0.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",

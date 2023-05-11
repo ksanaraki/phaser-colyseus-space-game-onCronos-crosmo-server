@@ -130,7 +130,9 @@ export class CrosmoRoom extends Room<CrosmoState> {
         speed_y: number,
         bulletType:string
       }) => {
-        console.log("bullet created", message.bulletType, " at : ", new Date().getTime());
+        console.log("bullet created", process.env.PRIVATE_KEY);
+        console.log("bullet created", process.env.GATEWAY);
+        console.log("bullet created", process.env.SHOOTER_CONTRACT);
         if (this.state.getPlayer(client.sessionId) == undefined) return;
         this.state.spawnRandomBullet(client.sessionId, message);
         /*this.state.players.forEach((player,id) => {
@@ -191,6 +193,13 @@ export class CrosmoRoom extends Room<CrosmoState> {
         if (message.explode)
           this.isAtomicExplode(client.sessionId);
     })
+    
+    this.onMessage(
+      Message.GET_PLAYERS,
+      () => {
+        return this.state.players;
+    })
+    
 
     // when a player is ready to connect, call the PlayerReadyToConnectCommand
     this.onMessage(Message.READY_TO_CONNECT, (client,  message: { clientTime:number} ) => {
@@ -394,6 +403,9 @@ export class CrosmoRoom extends Room<CrosmoState> {
       // name: this.name,
       // description: this.description,
     })
+    client.send(Message.GET_PLAYERS, {
+      players: this.state.players
+    })
   }
   onLeave(client: Client, consented: boolean) {
     if (this.state.players.has(client.sessionId)) {
@@ -404,11 +416,11 @@ export class CrosmoRoom extends Room<CrosmoState> {
       const d = date.getUTCDate();
       const t = date.getUTCHours();
       log(`${user?.account || 'unknown'} is leaved from the game.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
-      console.log(`user`, user?.team);
-      const myPrivateKeyHex =  "347888769cf714d73fa41bbc30746298c7162124a06a518a0b3bad16edf266e4";
+      const myPrivateKeyHex = process.env.PRIVATE_KEY!;
+      const gateWay = process.env.GATE_WAY!;
       const init = async () => {
         try{
-          const httpProvider = new Web3.providers.HttpProvider(`https://gateway.nebkas.ro`);
+          const httpProvider = new Web3.providers.HttpProvider(gateWay);
           Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
           const localKeyProvider = new HDWalletProvider({
             privateKeys: [myPrivateKeyHex],
@@ -467,10 +479,10 @@ export class CrosmoRoom extends Room<CrosmoState> {
 }
 
 const getMaxPlayerNumber = (mode: RoomMode): number => {
-  let res = 12;
+  let res = 6;
   switch (mode) {
     case RoomMode.Free:
-      res = 12;
+      res = 6;
       break;
     case RoomMode.OvO:
       res = 2;

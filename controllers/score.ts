@@ -16,10 +16,11 @@ const saveScore = async (req, res, next) => {
     tier,
   } = req.body
 
-  const myPrivateKeyHex = "347888769cf714d73fa41bbc30746298c7162124a06a518a0b3bad16edf266e4";
+  const myPrivateKeyHex = process.env.PRIVATE_KEY!;
+  const gateWay = process.env.GATE_WAY!;
 
   const init = async () => {
-    const httpProvider = new Web3.providers.HttpProvider(`https://gateway.nebkas.ro`);
+    const httpProvider = new Web3.providers.HttpProvider(gateWay);
     Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send
     const localKeyProvider = new HDWalletProvider({
       privateKeys: [myPrivateKeyHex],

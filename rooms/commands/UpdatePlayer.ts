@@ -23,7 +23,7 @@ type Payload = {
   tokenId: number,
   tier: number,
   paid: boolean,
-  team: number | null
+  team: number
 }
 
 export default class UpdatePlayer extends Command<ICrosmoState, Payload> {

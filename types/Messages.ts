@@ -1,4 +1,5 @@
 export enum Message {
+  GET_PLAYERS,
   UPDATE_PLAYER,
   UPDATE_SCORE,
   UPDATE_PLAYER_NAME,
