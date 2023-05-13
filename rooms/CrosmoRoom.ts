@@ -130,9 +130,6 @@ export class CrosmoRoom extends Room<CrosmoState> {
         speed_y: number,
         bulletType:string
       }) => {
-        console.log("bullet created", process.env.PRIVATE_KEY);
-        console.log("bullet created", process.env.GATEWAY);
-        console.log("bullet created", process.env.SHOOTER_CONTRACT);
         if (this.state.getPlayer(client.sessionId) == undefined) return;
         this.state.spawnRandomBullet(client.sessionId, message);
         /*this.state.players.forEach((player,id) => {
@@ -481,9 +478,6 @@ export class CrosmoRoom extends Room<CrosmoState> {
 const getMaxPlayerNumber = (mode: RoomMode): number => {
   let res = 6;
   switch (mode) {
-    case RoomMode.Free:
-      res = 6;
-      break;
     case RoomMode.OvO:
       res = 2;
       break;
