@@ -270,7 +270,7 @@ const config = {
     maxAsteroids: 12,
     incrementAsteroids: 2,
     minSpeed: 60,
-    maxSpeed: 100
+    maxSpeed: 60
   },
   enemyPros: {
     minSpeed: 60,

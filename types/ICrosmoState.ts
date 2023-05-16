@@ -32,6 +32,7 @@ export interface IBullet extends Schema {
   speed_x: number
   speed_y: number
   bulletType: string
+  teamflag: number
   curServerTime:number
 }
 

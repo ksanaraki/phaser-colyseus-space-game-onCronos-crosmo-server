@@ -81,6 +81,8 @@ export class Bullet extends Schema implements IBullet {
   //@ts-ignore
   @type('string') bulletType = ''
   //@ts-ignore
+  @type('number') teamflag = 0
+  //@ts-ignore
   @type('number') distanceTravelled = 0 
   //@ts-ignore
   @type('number') curServerTime = 0
@@ -192,7 +194,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
     if (this.players[id].lives <= 0)
       delete this.players[id];
   }
-  spawnRandomBullet(id: string, message: { x: any; y: any; rotation: any; speed_x: any; speed_y: any, bulletType: any }) {
+  spawnRandomBullet(id: string, message: { x: any; y: any; rotation: any; speed_x: any; speed_y: any, bulletType: any,teamflag:any }) {
     const bulletType = message.bulletType    
     switch (bulletType) {
 			case BULLET_TYPE.DOUBLE_BULLET:
@@ -200,7 +202,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
 				let newD = { x: message.speed_x / lenD, y: message.speed_y / lenD }
 
 				for (let i = -1; i <= 1; i += 2) {
-          this.createBullet(id,message.x - newD.y * 15 * i,message.y + newD.x * 15 * i,message.rotation, message.speed_x,message.speed_y,message.bulletType)
+          this.createBullet(id,message.x - newD.y * 15 * i,message.y + newD.x * 15 * i,message.rotation, message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 				}
 				break
 
@@ -209,7 +211,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
 				let newT = { x: message.speed_x / lenT, y: message.speed_y / lenT }
 
 				for (let i = -1; i <= 1; i++) {
-          this.createBullet(id,message.x - newT.y * 15 * i,message.y + newT.x * 15 * i,message.rotation, message.speed_x,message.speed_y,message.bulletType)
+          this.createBullet(id,message.x - newT.y * 15 * i,message.y + newT.x * 15 * i,message.rotation, message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 					
 				}
 				break
@@ -219,30 +221,30 @@ export class CrosmoState extends Schema implements ICrosmoState {
 					let q = i * Math.PI / 10
 					let r = (Math.sqrt(Math.pow((message.x + message.x), 2) + Math.pow((message.y + message.y), 2)))/4
 					let a = message.rotation
-          this.createBullet(id,message.x,message.y,message.rotation + q,r * Math.cos(a + q),r * Math.sin(a + q),message.bulletType)
+          this.createBullet(id,message.x,message.y,message.rotation + q,r * Math.cos(a + q),r * Math.sin(a + q),message.bulletType,message.teamflag)
 				}
 				break
 
 			case BULLET_TYPE.EXPLOSIVE_BULLET:
-				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType)
+				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 				break
 
 			case BULLET_TYPE.LAZER_BULLET:
 				setTimeout(() => {
-				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType)
+				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 				}, 500);
 				break
 
 			case BULLET_TYPE.ATOMIC_BULLET:
-				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType)
+				this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 				break
 
 			default:
-        this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType)
+        this.createBullet(id,message.x,message.y,message.rotation,message.speed_x,message.speed_y,message.bulletType,message.teamflag)
 				break
 		}
   }
-  createBullet(id: string, x:any,y:any,rotation:any,speed_x:any,speed_y:any,bulletType:any) {
+  createBullet(id: string, x:any,y:any,rotation:any,speed_x:any,speed_y:any,bulletType:any,teamflag:any) {
     let bullet = new Bullet();
     bullet.index = this.bullet_index;
     bullet.x = x;
@@ -252,6 +254,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
     bullet.speed_y = speed_y;
     bullet.owner = id;
     bullet.bulletType = bulletType;
+    bullet.teamflag = teamflag;
 		console.log("Insert new bullet at :", new Date().getTime())
     this.bullets[this.bullet_index++] = bullet;
 
@@ -315,7 +318,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
   spawnOneAsteroid()
   {
     let _maxAsteroidSpeed = 60;
-    let _minAsteroidSpeed = 100;
+    let _minAsteroidSpeed = 60;
     let { x, y, dir: direction } = this.getOuterRimCoords();
     let speed = randRange(_minAsteroidSpeed, _maxAsteroidSpeed);
     let speed_x = speed * Math.cos(direction);

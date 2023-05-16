@@ -9,7 +9,8 @@ type Payload = {
   rotation: number,
   speed_x:number,
   speed_y: number,
-  bulletType:string
+  bulletType:string,
+  teamflag:number
 }
 
 export default class UpdateBullet extends Command<ICrosmoState, Payload> {
@@ -18,7 +19,7 @@ export default class UpdateBullet extends Command<ICrosmoState, Payload> {
     super()
   }
   execute(data: Payload) {
-    const { client, x, y,rotation,speed_x,speed_y,bulletType } = data
+    const { client, x, y,rotation,speed_x,speed_y,bulletType,teamflag } = data
 
     const bullet = this.room.state.bullets.get(client.sessionId)
 
@@ -29,5 +30,6 @@ export default class UpdateBullet extends Command<ICrosmoState, Payload> {
     bullet.speed_x=speed_x
     bullet.speed_y = speed_y
     bullet.bulletType=bulletType
+    bullet.teamflag=teamflag
   }
 }

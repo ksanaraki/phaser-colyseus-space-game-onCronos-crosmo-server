@@ -47,6 +47,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
 
   private isSplit = false;
   private gameStart = false;
+  private gameStarted = false;
 
 
   async onCreate(options: IRoomData) {
@@ -54,7 +55,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
     this.name = name
     // this.description = description
     this.autoDispose = autoDispose
-
+    
     let hasPassword = false
     if (password) {
       const salt = await bcrypt.genSalt(10)
@@ -64,7 +65,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
     this.maxClients = getMaxPlayerNumber(roomMode);
     this.setMetadata({ name, hasPassword, roomMode, mapMode, cost })
     this.setState(new CrosmoState())
-    this.setPatchRate(20)//standard 50
+    this.setPatchRate(50)//standard 50
 
     // when receiving updatePlayer message, call the UpdatePlayer
     this.onMessage(
@@ -128,7 +129,8 @@ export class CrosmoRoom extends Room<CrosmoState> {
         rotation: number,
         speed_x:number,
         speed_y: number,
-        bulletType:string
+        bulletType:string,
+        teamflag:number
       }) => {
         if (this.state.getPlayer(client.sessionId) == undefined) return;
         this.state.spawnRandomBullet(client.sessionId, message);
@@ -172,15 +174,15 @@ export class CrosmoRoom extends Room<CrosmoState> {
       }
     )
 
-    // this.onMessage(
-    //   Message.GAMEPLAY_READY,
-    //   (client, message: {
-    //     ready: boolean;
-    //   }) => {
-    //     this.gameStart = message.ready;
-    //     if(this.gameStart)
-    this.startGameServer()
-    // })
+    this.onMessage(
+      Message.GAMEPLAY_READY,
+      (client, message: {
+        ready: boolean;
+      }) => {
+        this.gameStart = message.ready;
+        if(this.gameStart && this.state.players.size === this.maxClients && !this.gameStarted)
+          this.startGameServer()
+     })
 
     this.onMessage(
       Message.ATOMIC_EXPLODE,
@@ -203,11 +205,29 @@ export class CrosmoRoom extends Room<CrosmoState> {
       const player = this.state.players.get(client.sessionId);      
       this.state.setDtClient2Server(message.clientTime,client.sessionId);
       if (player) player.readyToConnect = true;
+      
+      this.state.players.forEach((player,id) => {
+        if (id !== client.sessionId)
+        client.send(
+          Message.SEND_OTHER_DATA, {
+          player: player,
+          id: id,
+          maxClients: this.maxClients
+          })
+        })
     })
+
+    this.onMessage(Message.UPDATE_PLAYER_NAME, (client,  message: { clientName:string} ) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) 
+        player.account = message.clientName;
+    })
+
   }
   startGameServer() {
+    this.gameStarted = true;
     this.delayedInterval = this.clock.setInterval(() => {
-      if (this.state._enemyCount < 8) {
+      if (this.state._enemyCount < 8 && this.metadata.mapMode != MapMode.Blank) {
         this.state.spawnOneAsteroid();
         // this.state.spawnRandomAirdrop(300, 400, 80);
       }
@@ -310,7 +330,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
               let dx = player.x - bullet.x;
               let dy = player.y - bullet.y;
               let dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < bulletRange) {
+              if (dist < bulletRange && bullet.teamflag != player.team ) {
                 this.broadcast(
                   Message.COLLIDE_PLAYER_BULLET, {
                   punished_id: id,
