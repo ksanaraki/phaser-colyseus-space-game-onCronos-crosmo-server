@@ -3,7 +3,7 @@ import { Room, Client, ServerError, Delayed } from 'colyseus'
 import { Dispatcher } from '@colyseus/command'
 import Web3 from 'web3'
 import HDWalletProvider from "@truffle/hdwallet-provider"
-import { Player, Bullet, CrosmoState } from './schema/CrosmoState'
+import { Player, Bullet, CrosmoState, Asteroid } from './schema/CrosmoState'
 import { Message } from '../types/Messages'
 import { IRoomData } from '../types/Rooms'
 import UpdatePlayer from './commands/UpdatePlayer'
@@ -173,15 +173,17 @@ export class CrosmoRoom extends Room<CrosmoState> {
         //this.state.removeAirdrop(Number(this.state.airdrop_index - 1));
       }
     )
-
     this.onMessage(
       Message.GAMEPLAY_READY,
       (client, message: {
         ready: boolean;
       }) => {
         this.gameStart = message.ready;
+        
         if(this.gameStart && this.state.players.size === this.maxClients && !this.gameStarted)
+        {
           this.startGameServer()
+        }
      })
 
     this.onMessage(
@@ -226,9 +228,9 @@ export class CrosmoRoom extends Room<CrosmoState> {
   }
   startGameServer() {
     this.gameStarted = true;
-    this.delayedInterval = this.clock.setInterval(() => {
+    this.delayedInterval = this.clock.setInterval(() => { 
       if (this.state._enemyCount < 8 && this.metadata.mapMode != MapMode.Blank) {
-        this.state.spawnOneAsteroid();
+                this.state.spawnOneAsteroid();
         // this.state.spawnRandomAirdrop(300, 400, 80);
       }
     }, 2000);
@@ -273,6 +275,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
   ServerGameLoop() {
     // if(this.state._enemyCount===0)
     //   this.state.spawnAsteroids();
+    
     this.state.asteroids?.forEach((asteroid, index) => {
       this.state.moveAsteroid(Number(index));
       /*this.state.players?.forEach((player, id) => {
@@ -496,7 +499,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
 }
 
 const getMaxPlayerNumber = (mode: RoomMode): number => {
-  let res = 6;
+  let res = 1;
   switch (mode) {
     case RoomMode.OvO:
       res = 2;

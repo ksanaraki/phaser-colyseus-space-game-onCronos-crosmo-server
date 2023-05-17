@@ -295,6 +295,7 @@ export class CrosmoState extends Schema implements ICrosmoState {
   }
  
   moveAsteroid(index: number) {
+    
     this.asteroids[index].x += this.asteroids[index].speed_x/20;
     this.asteroids[index].y += this.asteroids[index].speed_y/20;
     if (this.asteroids[index].x < -30 || this.asteroids[index].x > this._width + 30 || this.asteroids[index].y < -30 || this.asteroids[index].y > this._height + 30) {

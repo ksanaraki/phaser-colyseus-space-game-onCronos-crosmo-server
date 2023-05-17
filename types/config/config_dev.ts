@@ -5,7 +5,7 @@ const config = {
     SIGN_DATA:'Crosmo Crafts',
     SIGN_PASS:'meta-pirate',
     API_URL:'http://127.0.0.1:2083/api',
-    END_POINT :'ws://127.0.0.1.151:2083',
+    END_POINT :'ws://127.0.0.1:2083',
   }
 }
 
