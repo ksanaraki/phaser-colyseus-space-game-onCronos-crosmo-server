@@ -4,10 +4,10 @@
   "description": "Server for Crosmo Shooter",
   "main": ".eslintrc.js",
   "scripts": {
-    "start": "concurrently \"ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts\" \"serve -s build\"",
-    "dev": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
+    "start:production": "concurrently \"ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts\" \"serve -s build\"",
+    "start:demo": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
     "heroku-postbuild": "npm i && ts-node --project tsconfig.server.json --transpile-only index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts"
   },
   "repository": {
     "type": "git",

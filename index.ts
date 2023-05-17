@@ -32,7 +32,7 @@ app.use(express.static("build"));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "build", "index.html"));
 });
-
+console.log(`pro`, process.env.NODE_ENV, process.env.MONGO_HOST);
 mongoose.Promise = Promise
 // const mongoUri = 'mongodb://localhost/crosmo-crafts'
 const mongoUri = process.env.MONGO_HOST
