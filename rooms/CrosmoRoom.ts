@@ -442,7 +442,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
       log(`${user?.account || 'unknown'} is leaved from the game.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
       const myPrivateKeyHex = process.env.PRIVATE_KEY!;
       const gateWay = process.env.GATE_WAY!;
-      const init = async () => {
+      const init = async (acc: number) => {
         try{
           const httpProvider = new Web3.providers.HttpProvider(gateWay);
           Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
@@ -454,10 +454,10 @@ export class CrosmoRoom extends Room<CrosmoState> {
           const myAccount = web3.eth.accounts.privateKeyToAccount(myPrivateKeyHex);
           const myContract = new web3.eth.Contract(shooterAbi as any, shooterContractAddr);
           try {
-            const receipt = await myContract.methods.playSession(user?.score, user?.account, user?.tokenId).send({ from: myAccount.address });
+            const receipt = await myContract.methods.playSession(user?.score * acc, user?.account, user?.tokenId).send({ from: myAccount.address });
           } catch (e) {
             console.log('error occured in sending reward token. try it again...', e)
-            setTimeout(() => init(), 1000)
+            setTimeout(() => init(acc), 1000)
           }
         }
         catch(e) {
@@ -466,8 +466,12 @@ export class CrosmoRoom extends Room<CrosmoState> {
 
       }
       if (user?.score > 0 && user?.paid) {
+        let acc = 0
+        if(user?.wasted != 0) {
+          acc = user?.hits / user?.wasted
+        }
         console.log(user?.hits, user?.wasted)
-        // init()
+        // init(acc)
       }
 
       (async () => {
