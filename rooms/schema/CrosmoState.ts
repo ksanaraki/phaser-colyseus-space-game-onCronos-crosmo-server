@@ -35,6 +35,10 @@ export class Player extends Schema implements IPlayer {
   //@ts-ignore
   @type('number') team = 0
   //@ts-ignore
+  @type('number') wasted = 0
+  //@ts-ignore
+  @type('number') hits = 0
+  //@ts-ignore
   @type('number') x = 705
   //@ts-ignore
   @type('number') y = 500

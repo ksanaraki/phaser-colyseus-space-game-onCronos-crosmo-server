@@ -8,6 +8,8 @@ export interface IPlayer extends Schema {
   shipName: string,
   paid: boolean,
   team: number,
+  wasted: number,
+  hits: number,
   x: number,
   y: number,
   rotation: number,

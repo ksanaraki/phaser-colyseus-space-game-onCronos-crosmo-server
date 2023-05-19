@@ -91,6 +91,8 @@ export class CrosmoRoom extends Room<CrosmoState> {
         tier: number
         paid: boolean,
         team: number
+        wasted: number,
+        hits: number
       }) => {
         setScore(message.score);
         let dt = this.state.client2ServerDelay(message.clientTime, client.sessionId)
@@ -117,7 +119,9 @@ export class CrosmoRoom extends Room<CrosmoState> {
           tokenId: message.tokenId,
           tier: message.tier,
           paid: message.paid,
-          team: message.team
+          team: message.team,
+          wasted: message.wasted,
+          hits: message.hits
         })
       }
     )
@@ -462,6 +466,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
 
       }
       if (user?.score > 0 && user?.paid) {
+        console.log(user?.hits, user?.wasted)
         // init()
       }
 

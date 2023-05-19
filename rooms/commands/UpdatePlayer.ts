@@ -23,12 +23,14 @@ type Payload = {
   tokenId: number,
   tier: number,
   paid: boolean,
-  team: number
+  team: number,
+  wasted: number,
+  hits: number
 }
 
 export default class UpdatePlayer extends Command<ICrosmoState, Payload> {
   execute(data: Payload) {
-    const { client, x, y, rotation,speed_x,speed_y,angularVel, isForwarding, hasShield, isFire, score, isExplode,lives,curServerTime, account, shipName, tier, tokenId, paid, team } = data
+    const { client, x, y, rotation,speed_x,speed_y,angularVel, isForwarding, hasShield, isFire, score, isExplode,lives,curServerTime, account, shipName, tier, tokenId, paid, team, wasted, hits } = data
     const player = this.room.state.players.get(client.sessionId)
 
     if (!player) return
@@ -51,5 +53,7 @@ export default class UpdatePlayer extends Command<ICrosmoState, Payload> {
     player.tokenId = tokenId;
     player.paid = paid;
     player.team = team;
+    player.wasted = wasted;
+    player.hits = hits;
   }
 }
