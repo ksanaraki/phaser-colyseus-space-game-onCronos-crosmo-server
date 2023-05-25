@@ -5,7 +5,7 @@
   "main": ".eslintrc.js",
   "scripts": {
     "start:production": "concurrently \"ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts\" \"serve -l 3333 -s build\"",
-    "start:demo": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
+    "start:server": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts",
     "heroku-postbuild": "npm i && ts-node --project tsconfig.server.json --transpile-only index.ts",
     "test": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only index.ts"
   },
