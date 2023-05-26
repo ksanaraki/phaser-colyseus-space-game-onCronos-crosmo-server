@@ -434,6 +434,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
   onLeave(client: Client, consented: boolean) {
     if (this.state.players.has(client.sessionId)) {
       const user = this.state.getPlayer(client.sessionId);
+      console.log(`user ${user?.account} leaved`)
       const date = new Date();
       const y = date.getUTCFullYear();
       const m = date.getUTCMonth();
@@ -454,7 +455,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
           const myAccount = web3.eth.accounts.privateKeyToAccount(myPrivateKeyHex);
           const myContract = new web3.eth.Contract(shooterAbi as any, shooterContractAddr);
           try {
-            const receipt = await myContract.methods.playSession(user?.score * acc, user?.account, user?.tokenId).send({ from: myAccount.address });
+            const receipt = await myContract.methods.playSession(Math.round(user?.score * acc), user?.account, user?.tokenId).send({ from: myAccount.address });
           } catch (e) {
             console.log('error occured in sending reward token. try it again...', e)
             setTimeout(() => init(acc), 1000)
@@ -482,13 +483,13 @@ export class CrosmoRoom extends Room<CrosmoState> {
         const t = date.getUTCHours();
         try{
           if(user){
-            const usrRes = await scoreService.saveScoreService(user?.account || `unknow`, user?.tokenId || `unknow`, user?.shipName || `unknow`, user?.tier || 0, user?.score || 0);
+            const usrRes = await scoreService.saveScoreService(user?.account || `unknown`, user?.tokenId || `unknown`, user?.shipName || `unknown`, user?.tier || 0, user?.score || 0);
 
-            log(`${user?.account || 'unknow'} get rewards for ${user?.score || 0}.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
+            log(`${user?.account || 'unknown'} get rewards for ${user?.score || 0}.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
           }
         }
         catch(e){
-          log(`${user?.account || 'unknow'} didn't get rewards for ${user?.score || 0}. An Error was occupsed.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
+          log(`${user?.account || 'unknown'} didn't get rewards for ${user?.score || 0}. An Error was occupsed.`, `./logs/${y}-${m + 1}-${d}-${t}.log`);
           console.log(`Score Record failed! `, e);
         }
       })()
@@ -508,7 +509,7 @@ export class CrosmoRoom extends Room<CrosmoState> {
 }
 
 const getMaxPlayerNumber = (mode: RoomMode): number => {
-  let res = 1;
+  let res = 2;
   switch (mode) {
     case RoomMode.OvO:
       res = 2;
